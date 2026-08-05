@@ -1,12 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const [review, setReview] = useState("Generating your review...");
 
   useEffect(() => {
-    fetch("/api/review")
+    fetch("/api/review", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt:
+          "Write a professional Google review for an RO water purifier repair and service company in 80-120 words.",
+      }),
+    })
       .then((res) => res.json())
       .then((data) => setReview(data.review))
       .catch(() =>
@@ -48,4 +57,15 @@ export default function Home() {
       <button
         onClick={copyAndOpen}
         style={{
-          marginTop: 
+          marginTop: 20,
+          width: "100%",
+          padding: 14,
+          fontSize: 16,
+          cursor: "pointer",
+        }}
+      >
+        Copy Review & Open Google Review
+      </button>
+    </main>
+  );
+}
