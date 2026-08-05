@@ -1,25 +1,26 @@
-import OpenAI from "openai";
 import { NextResponse } from "next/server";
+import openai from "@/lib/openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-export async function GET() {
+export async function POST(req: Request) {
   try {
-    const completion = await openai.responses.create({
-      model: "gpt-5-nano",
-      input: `
-You are helping a customer write a Google review for an RO water purifier repair and service shop.
+    const { prompt } = await req.json();
 
-Write a natural, human-like review in 40–70 words based only on the customer's real experience. If the customer doesn't provide specific details, keep the review general and avoid inventing facts. Mention aspects such as technician behavior, repair quality, response time, pricing, cleanliness, or problem resolution only if appropriate. Use simple, conversational language. Make every review unique. Do not use emojis or hashtags.
-`
+    const response = await openai.chat.completions.create({
+      model: "gpt-4.1-mini",
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
     });
 
     return NextResponse.json({
-      review: completion.output_text
+      review: response.choices[0].message.content,
     });
-
   } catch (error) {
     return NextResponse.json({
-      review: "
+      review: "Failed to generate review.",
+    });
+  }
+}
